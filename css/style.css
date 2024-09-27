@@ -1,0 +1,7 @@
+body {
+    background-color: black;
+}
+canvas {
+    background-color: #f5deb3; /* 囲碁盤の木目色 */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}

@@ -6,7 +6,6 @@ const gridSize = canvas.width / boardSize;
 const stoneRadius = gridSize / 3;
 const placedPositions = new Set();
 
-// 各座標を管理するマップ（座標ごとに色を格納）
 const stoneMap = new Map();
 
 function drawLine(x1, y1, x2, y2) {
@@ -55,38 +54,32 @@ function drawStone(x, y, color) {
     ctx.fill();
 }
 
-// ランダムに石を設置
-function placeRandomStones(numStones, color) {
-    for (let i = 0; i < numStones; i++) {
-        let x, y;
+function placeRandomStones(color) {
+    let x, y;
 
-        do {
-            x = Math.floor(Math.random() * boardSize);
-            y = Math.floor(Math.random() * boardSize);
-        } while (placedPositions.has(`${x},${y}`));
+    do {
+        x = Math.floor(Math.random() * boardSize);
+        y = Math.floor(Math.random() * boardSize);
+    } while (placedPositions.has(`${x},${y}`));
 
-        placedPositions.add(`${x},${y},${color}`);
-        stoneMap.set(`${x},${y}`, color); // stoneMapに座標と色を保存
-        
-        drawStone(x * gridSize, y * gridSize, color);
-    }
+    placedPositions.add(`${x},${y}`);
+    stoneMap.set(`${x},${y}`, color);
+    
+    drawStone(x * gridSize, y * gridSize, color);
 }
 
-// 連続して5つ並んでいるかどうかを判定
 function checkFiveInARow() {
     const directions = [
-        [1, 0],  // 横方向
-        [0, 1],  // 縦方向
-        [1, 1],  // 右下斜め方向
-        [-1, 1]  // 左下斜め方向
+        [1, 0],
+        [0, 1],
+        [1, 1],
+        [-1, 1],
     ];
 
-    // 石の位置と色をチェック
     for (let position of stoneMap.keys()) {
         const [x, y] = position.split(',').map(Number);
         const color = stoneMap.get(`${x},${y}`);
         
-        // 各方向に対して連続する5つをチェック
         for (let [dx, dy] of directions) {
             let count = 1;
 
@@ -101,8 +94,7 @@ function checkFiveInARow() {
                 }
             }
 
-            // 5つ連続しているか判定
-            if (count === 5) {
+            if (count >= 5) {
                 console.log(`5つ連続しています: 色 ${color}, 始点 (${x}, ${y})`);
                 return true;
             }
@@ -112,8 +104,10 @@ function checkFiveInARow() {
 }
 
 drawBoard();
-placeRandomStones(40, 'b');
-placeRandomStones(40, 'w');
+for (let i = 0; i < 10; i++) {
+    placeRandomStones('b');
+    placeRandomStones('w');
+}
 
 if (checkFiveInARow()) {
     console.log('5つ連続しました！');

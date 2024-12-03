@@ -8,10 +8,11 @@ let shuffledOrder = [];
 const canvas = document.getElementById('goBoard');
 const ctx = canvas.getContext('2d');
 
-const boardSize = 12;
+const boardSize = 14;
 const gridSize = canvas.width / boardSize;
 const stoneRadius = gridSize / 3;
 const placedPositions = new Set();
+let isFinished = false;
 
 const stoneMap = new Map();
 drawBoard();
@@ -92,9 +93,9 @@ function drawLine(x1, y1, x2, y2) {
 }
 
 function drawBoard() {
-    for (let i = 0; i < boardSize; i++) {
-        drawLine(i * gridSize, 0, i * gridSize, canvas.height);
-        drawLine(0, i * gridSize, canvas.width, i * gridSize);
+    for (let i = 1; i < boardSize; i++) {
+        drawLine(i * gridSize, gridSize, i * gridSize, canvas.height - gridSize);
+        drawLine(gridSize, i * gridSize, canvas.width - gridSize, i * gridSize);
     }
     
     drawStars();
@@ -102,9 +103,9 @@ function drawBoard() {
 
 function drawStars() {
     const starPositions = [
-        [3, 3], [3, 6], [3, 9],
-        [6, 3], [6, 6], [6, 9],
-        [9, 3], [9, 6], [9, 9],
+        [4, 4], [4, 7], [4, 10],
+        [7, 4], [7, 7], [7, 10],
+        [10, 4], [10, 7], [10, 10],
     ];
 
     starPositions.forEach(pos => {
@@ -132,8 +133,8 @@ function placeRandomStones(color) {
     let x, y;
 
     do {
-        x = Math.floor(Math.random() * boardSize);
-        y = Math.floor(Math.random() * boardSize);
+        x = Math.floor(Math.random() * (boardSize - 1)) + 1;
+        y = Math.floor(Math.random() * (boardSize - 1)) + 1;
     } while (placedPositions.has(`${x},${y}`));
 
     placedPositions.add(`${x},${y}`);
@@ -141,7 +142,10 @@ function placeRandomStones(color) {
     
     drawStone(x * gridSize, y * gridSize, color);
 
-    checkFiveInARow();
+    const restult = checkFiveInARow();
+    if (restult) {
+        isFinished = true;
+    }
 }
 
 function checkFiveInARow() {
@@ -179,6 +183,11 @@ function checkFiveInARow() {
     return false;
 }
 
-setInterval(() => {
-    placeRandomStones('w');
-}, 1000);
+const place = () => {
+    if (!isFinished) {
+        placeRandomStones('w');
+        setTimeout(place, 100);
+    }
+}
+
+setTimeout(place, 100);

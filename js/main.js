@@ -122,10 +122,16 @@ function drawStar(x, y) {
     ctx.fill();
 }
 
-function drawStone(x, y, color) {
+function drawStone(x, y, color, border=false) {
     ctx.beginPath();
     ctx.arc(x, y, stoneRadius, 0, 2 * Math.PI);
     ctx.fillStyle = color==='b' ? '#000' : '#fff';
+    //赤い枠線を引く
+    if (border) {
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
     ctx.fill();
 }
 
@@ -175,7 +181,11 @@ function checkFiveInARow() {
             }
 
             if (count >= 5) {
-                console.log(`5つ連続しています: 色 ${color}, 始点 (${x}, ${y})`);
+                for (let step = 0; step < count; step++) {
+                    const newX = x + dx * step;
+                    const newY = y + dy * step;
+                    drawStone(newX * gridSize, newY * gridSize, color, true);
+                }
                 return true;
             }
         }
